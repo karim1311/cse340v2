@@ -55,3 +55,67 @@ VALUES
 ;
 
 
+-- =======================================
+-- Create table: Categories
+-- =====================================
+CREATE TABLE categories (
+category_id SERIAL PRIMARY KEY,
+name VARCHAR(150) NOT NULL
+);
+
+
+-- =======================================
+-- Create table: project_categories
+-- =====================================
+CREATE TABLE project_categories (
+project_id INTEGER NOT NULL,
+category_id INTEGER NOT NULL,
+
+PRIMARY KEY (project_id, category_id),
+
+FOREIGN KEY (project_id) REFERENCES projects(project_id),
+FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
+
+
+
+-- =======================================
+-- Insert sample data: Categories
+-- =====================================
+INSERT INTO categories (name)
+VALUES 
+('Community Service'),
+('Educational'),
+('Environmental'),
+('Health and Wellness')
+;
+
+-- =======================================
+-- Insert sample data: project_categories
+-- =====================================
+-- 1.- Community, 2. Educational 3. Environmental 4. Health and Wellness 5. Hunger
+INSERT INTO project_categories (project_id, category_id)
+VALUES 
+(1,1),
+(1,3),
+(2,1),
+(2,5),
+(3,1),
+(3,4),
+(4,3),
+(5,1),
+(5,3),
+(6,5),
+(7,3),
+(8,1),
+(9,2),
+(10,1),
+(10,2),
+(11,2),
+(12,5),
+(13,1),
+(14,3),
+(15,1);
+
+
+
