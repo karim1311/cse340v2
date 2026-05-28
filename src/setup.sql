@@ -25,7 +25,7 @@ VALUES
 -- =====================================
 CREATE TABLE projects (
 project_id SERIAL PRIMARY KEY,
-organization_id INTEGER NOT NULL REFERENCES organization(organization_id),
+organization_id INTEGER NOT NULL REFERENCES organizations(organization_id),
 title VARCHAR(150) NOT NULL,
 description TEXT NOT NULL,
 location VARCHAR(255) NOT NULL,
@@ -87,7 +87,8 @@ VALUES
 ('Community Service'),
 ('Educational'),
 ('Environmental'),
-('Health and Wellness')
+('Health and Wellness'),
+('Hunger')
 ;
 
 -- =======================================
