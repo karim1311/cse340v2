@@ -17,7 +17,9 @@ import {
     processNewProjectForm, 
     projectValidation,
     showEditProjectForm,
-    processEditProjectForm 
+    processEditProjectForm,
+    processNewVolunteer,
+    processRemoveVolunteer 
 } from './controllers/projects.js'
 import { 
     showCategoriesPage,
@@ -93,6 +95,10 @@ router.get('/logout', processLogout)
 router.get('/dashboard', requireLogin, showDashboard)
 // Route to display all registered users
 router.get('/users', requireRole('admin'), showUsersPage)
+// Route to handle the volunteer project form submission
+router.post('/add-volunteer/:projectId', requireLogin, processNewVolunteer)
+// Route to handle the remove volunteer form submission
+router.post('/remove-volunteer/:projectId', requireLogin, processRemoveVolunteer)
 
 // error-handling routes
 router.get('/test-error', testErrorPage)

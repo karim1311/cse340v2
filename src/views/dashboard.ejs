@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 
 <main>
-    <h1><% title %></h1>
+    <h1><%= title %></h1>
 
     <h2>Dashboard</h2>
     <p>Name: <%= name %></p>
@@ -9,6 +9,25 @@
 
     <% if (user && user.role_name === 'admin') { %>
         <p><a href="/users">Users</a></p>
+    <% } %>
+
+    <% if (user) { %>
+        <p>Your Projects</p>
+        <ul>
+            <% userProjects.forEach(userProject => { %>
+                <li>
+                    <%= new Date(userProject.date).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    }) %>:
+                    <%= userProject.project_title %>
+                    <form action="/remove-volunteer/<%= userProject.project_id %>" method="POST">
+                        <button type="submit">Remove</button>
+                    </form>
+                </li>
+            <% }) %>
+        </ul>
     <% } %>
 </main>
 

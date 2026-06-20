@@ -1,5 +1,16 @@
 // Import any needed model functions
-import { getAllProjects, getUpcomingProjects, getProjectDetails, createProject, updateProject } from '../models/projects.js'
+import { 
+    getAllProjects, 
+    getUpcomingProjects, 
+    getProjectDetails, 
+    createProject, 
+    updateProject,
+    getUsersFromProjectId,
+    getProjectsFromUserId,
+    assignUserToProject,
+    removeUserFromProject,
+    isUserVolunteer
+} from '../models/projects.js'
 import { getCategoriesFromProjectId } from '../models/categories.js'
 import { getAllOrganizations } from '../models/organizations.js'
 import { body, validationResult } from 'express-validator'
@@ -42,9 +53,17 @@ const showProjectDetailsPage = async (req, res) => {
     const projectDetails = await getProjectDetails(projectId)
     const categories = await getCategoriesFromProjectId(projectId)
 
+    const user = req.session.user
+
+    let isVolunteer = false
+    if (user) {
+        isVolunteer = await isUserVolunteer(req.session.user.user_id, projectId)
+    }
+
+
     const title = 'Project Details'
 
-    res.render('project', { title, projectDetails, categories })
+    res.render('project', { title, projectDetails, categories, isVolunteer })
 }
 
 const showNewProjectForm = async (req, res) => {
@@ -118,5 +137,29 @@ const processEditProjectForm = async (req, res) => {
     res.redirect(`/project/${projectId}`)
 }
 
+const processNewVolunteer = async (req, res) => {
+    const projectId = req.params.projectId
+    const userId = req.session.user.user_id
+
+    await assignUserToProject(projectId, userId)
+
+    // Set a success flash message
+    req.flash('success', 'Volunteered to Project successfully!')
+
+    res.redirect(`/project/${projectId}`)
+}
+
+const processRemoveVolunteer = async (req, res) => {
+    const projectId = req.params.projectId
+    const userId = req.session.user.user_id
+
+    await removeUserFromProject(projectId, userId)
+
+    // Set a success flash message
+    req.flash('success', 'Removed from volunteer successfully.')
+
+    res.redirect(`/project/${projectId}`)
+}
+
 // Export any controller functions
-export { showProjectsPage, showProjectDetailsPage, showNewProjectForm, processNewProjectForm, projectValidation, showEditProjectForm, processEditProjectForm }
+export { showProjectsPage, showProjectDetailsPage, showNewProjectForm, processNewProjectForm, projectValidation, showEditProjectForm, processEditProjectForm, processNewVolunteer, processRemoveVolunteer }

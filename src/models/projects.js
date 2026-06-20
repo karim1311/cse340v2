@@ -118,5 +118,78 @@ const updateProject = async (organizationId, title, description, location, date,
     return result.rows[0].projectId
 }
 
+
+const getUsersFromProjectId = async (id) => {
+    const query = `
+    SELECT p.project_id, 
+	p.title project_title,
+	c.category_id,
+	c.name category_name
+    FROM users u
+    LEFT JOIN project_users pu ON pu.user_id = u.user_id
+    LEFT JOIN projects p ON p.project_id = pu.project_id
+    WHERE p.project_id = $1
+    `
+
+    const queryParams = [id]
+    const result = await db.query(query,queryParams)
+
+    return result.rows
+}
+
+const getProjectsFromUserId = async (id) => {
+    const query = `
+    SELECT p.project_id,
+	p.title project_title,
+    p.date
+    FROM projects p 
+    LEFT JOIN project_users pu ON p.project_id = pu.project_id
+    LEFT JOIN users u ON u.user_id = pu.user_id
+	WHERE u.user_id = $1
+    `
+
+    const queryParams = [id]
+    const result = await db.query(query,queryParams)
+
+    return result.rows
+}
+
+const assignUserToProject = async (projectId, userId) => {
+    const query = `
+        INSERT INTO project_users (project_id, user_id)
+        VALUES ($1, $2)
+    `
+
+    await db.query(query, [projectId, userId])
+}
+
+const removeUserFromProject = async (projectId, userId) => {
+    // First, remove existing category assignments for the project
+    const deleteQuery = `
+        DELETE FROM project_users
+        WHERE project_id = $1 AND user_id = $2
+    `
+
+    const queryParams = [projectId, userId]
+    await db.query(deleteQuery, queryParams)
+}
+
+const isUserVolunteer = async (userId, projectId) => {
+    const query = `
+    SELECT EXISTS (
+        SELECT 1
+        FROM project_users
+        WHERE user_id = $1 AND
+        project_id = $2
+    )
+    `
+
+    const queryParams = [userId, projectId]
+    const result = await db.query(query, queryParams)
+
+    return result.rows[0].exists
+}
+
+
 // Export the model functions
-export { getAllProjects, getProjectsByOrganizationId, getUpcomingProjects, getProjectDetails, createProject, updateProject }
+export { getAllProjects, getProjectsByOrganizationId, getUpcomingProjects, getProjectDetails, createProject, updateProject, getUsersFromProjectId, getProjectsFromUserId, assignUserToProject, removeUserFromProject, isUserVolunteer }
